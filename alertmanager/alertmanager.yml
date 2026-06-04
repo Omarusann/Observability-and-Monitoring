@@ -1,0 +1,22 @@
+global:
+  smtp_smarthost: 'smtp.gmail.com:587'
+  # Aquí va tu GMAIL PERSONAL desde donde se enviarán las alertas
+  smtp_from: 'correo1@gmail.com'
+  smtp_auth_username: 'correo1@gmail.com'
+  # Esta NO es tu contraseña normal, es la "Contraseña de aplicación" de 16 letras
+  smtp_auth_password: 'ContraseñaDeApp'
+  smtp_require_tls: true
+
+route:
+  # Cambiamos "dummy" por un nombre que tenga sentido
+  receiver: 'correo-devops'
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 1h
+
+receivers:
+  - name: 'correo-devops'
+    email_configs:
+      # Aquí es donde van a llegar las alertas
+      - to: 'correo2@gmail.com'
+        send_resolved: true

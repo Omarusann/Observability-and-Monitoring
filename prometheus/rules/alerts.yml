@@ -1,0 +1,49 @@
+groups:
+  - name: host-alerts
+    rules:
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 80
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Uso alto de CPU"
+          description: "La instancia {{ $labels.instance }} tiene CPU superior al 80% durante más de 1 minuto."
+
+      - alert: HighMemoryUsage
+        expr: 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 30
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Uso alto de memoria RAM"
+          description: "La instancia {{ $labels.instance }} tiene memoria superior al 85%."
+
+      - alert: DiskAlmostFull
+        expr: 100 * (1 - (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"})) > 90
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disco casi lleno"
+          description: "El filesystem en {{ $labels.instance }} supera el 90% de uso."
+
+  - name: service-alerts
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Servicio no disponible"
+          description: "El contenedor o target {{ $labels.job }} en {{ $labels.instance }} no está respondiendo. (Cubre MariaDB, Django, Tomcat y Contenedores)."
+
+      - alert: WordPressDown
+        expr: probe_success == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "WordPress caído o con error HTTP"
+          description: "El Blackbox Exporter detectó que WordPress no devuelve un status 2xx."

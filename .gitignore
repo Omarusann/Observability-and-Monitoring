@@ -1,0 +1,7 @@
+# Ocultar secretos
+.env
+
+# Ignorar datos locales de los contenedores
+prometheus_data/
+grafana_data/
+mariadb_data/
